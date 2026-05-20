@@ -943,7 +943,21 @@
       overflow: hidden;
       cursor: pointer;
       box-shadow: var(--shadow-md);
+      display: block;
+      text-decoration: none;
     }
+    .video-thumb img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .6s cubic-bezier(.2,.7,.2,1);
+      z-index: 0;
+    }
+    .video-thumb:hover img { transform: scale(1.04); }
+    .video-thumb > .play-button,
+    .video-thumb > .video-thumb-overlay { z-index: 2; }
     .video-thumb::before {
       content: '';
       position: absolute;
@@ -951,6 +965,7 @@
       background:
         radial-gradient(circle at 30% 40%, rgba(224, 176, 105, 0.3) 0%, transparent 50%),
         radial-gradient(circle at 70% 60%, rgba(184, 132, 62, 0.2) 0%, transparent 50%);
+      z-index: 1;
     }
     .play-button {
       position: absolute;
@@ -1315,7 +1330,12 @@
                 <button class="btn btn-primary" data-nav="book">
                   Buy the Book <span class="btn-arrow">→</span>
                 </button>
-                <button class="btn btn-secondary" data-nav="book">Read a Sample</button>
+                <a class="btn btn-secondary"
+                   href="https://read.amazon.com/sample/B0DDWGRGWR?clientId=share"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  Read a Sample
+                </a>
               </div>
               <div class="hero-meta">
                 <div class="meta-item">
@@ -1337,14 +1357,8 @@
             <div class="hero-visual">
               <div class="book-stage">
                 <div class="book-cover">
-                  <!--
-                    Image is proxied through images.weserv.nl because the
-                    source file on GitHub has no extension, causing browsers
-                    to refuse rendering it directly. The proxy sniffs the
-                    content and serves a proper image MIME type.
-                  -->
                   <img
-                    src="https://images.weserv.nl/?url=raw.githubusercontent.com/artchill/dr-maddox/main/bookcover&output=jpg"
+                    src="https://raw.githubusercontent.com/artchill/dr-maddox/main/bookcover-maddox.png"
                     alt="Masterclass: How to Become a High Performer — book cover"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                   />
@@ -1466,9 +1480,8 @@
           <div class="book-detail-cover">
             <div class="book-stage">
               <div class="book-cover">
-                <!-- Same proxy approach as the home page hero cover -->
                 <img
-                  src="https://images.weserv.nl/?url=raw.githubusercontent.com/artchill/dr-maddox/main/bookcover&output=jpg"
+                  src="https://raw.githubusercontent.com/artchill/dr-maddox/main/bookcover-maddox.png"
                   alt="Masterclass: How to Become a High Performer"
                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                 />
@@ -1514,7 +1527,11 @@
               <h3>Available Formats</h3>
               <div class="purchase-buttons">
 
-                <a href="#" class="purchase-btn" aria-label="Buy Amazon Kindle">
+                <a href="https://www.amazon.com/Masterclass-How-Become-High-Performer-ebook/dp/B0DDWGRGWR?ref_=litb_stb_nodl"
+                   class="purchase-btn"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Buy Amazon Kindle">
                   <div class="purchase-btn-label">
                     <span class="format">Digital</span>
                     <span class="platform">Amazon Kindle</span>
@@ -1522,7 +1539,11 @@
                   <span class="btn-arrow">→</span>
                 </a>
 
-                <a href="#" class="purchase-btn" aria-label="Buy Amazon Paperback">
+                <a href="https://www.amazon.com/Masterclass-How-Become-High-Performer/dp/1977290884/ref=tmm_pap_swatch_0"
+                   class="purchase-btn"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Buy Amazon Paperback">
                   <div class="purchase-btn-label">
                     <span class="format">Print</span>
                     <span class="platform">Amazon Paperback</span>
@@ -1540,7 +1561,11 @@
 
               </div>
 
-              <a href="#" class="btn btn-accent" style="margin-top:1rem;">
+              <a href="https://read.amazon.com/sample/B0DDWGRGWR?clientId=share"
+                 class="btn btn-accent"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 style="margin-top:1rem;">
                 Read a Kindle Sample <span class="btn-arrow">→</span>
               </a>
             </div>
@@ -1629,7 +1654,17 @@
 
           <!-- Featured: This Week in America with Ric Bratton -->
           <article class="featured-video">
-            <div class="video-thumb" role="button" aria-label="Play featured interview">
+            <a class="video-thumb"
+               href="https://www.youtube.com/watch?v=IgHW3EjdiTM"
+               target="_blank"
+               rel="noopener noreferrer"
+               aria-label="Watch the featured interview on YouTube">
+              <!-- YouTube auto-generated thumbnail; falls back to hqdefault if maxres unavailable -->
+              <img
+                src="https://img.youtube.com/vi/IgHW3EjdiTM/maxresdefault.jpg"
+                alt="This Week in America with Ric Bratton — Dr. R.K. Maddox interview"
+                onerror="if(this.src.indexOf('maxres')>-1){this.src='https://img.youtube.com/vi/IgHW3EjdiTM/hqdefault.jpg';}"
+              />
               <div class="play-button" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
               </div>
@@ -1637,13 +1672,19 @@
                 <div class="vid-show">This Week in America</div>
                 <div class="vid-duration">Author & Book Interview</div>
               </div>
-            </div>
+            </a>
             <div class="featured-video-info">
               <div class="featured-label">★ Featured Interview</div>
               <h2>From Average to Elite: The Mindset Shift That Changes Everything</h2>
               <div class="video-host">with Ric Bratton — This Week in America</div>
               <p>Dr. R.K. Maddox joins veteran broadcaster Ric Bratton for an in-depth conversation about <em>Masterclass: How to Become a High Performer</em> — unpacking the principles, the practice, and the mindset that separates elite performers from everyone else.</p>
-              <a href="#" class="btn btn-primary" style="margin-top:1rem;">Watch the Interview <span class="btn-arrow">→</span></a>
+              <a href="https://www.youtube.com/watch?v=IgHW3EjdiTM"
+                 class="btn btn-primary"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 style="margin-top:1rem;">
+                Watch the Interview <span class="btn-arrow">→</span>
+              </a>
             </div>
           </article>
 
