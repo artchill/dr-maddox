@@ -447,8 +447,11 @@
        depth + shadow) sits cleanly on the page background.
        drop-shadow filter is used instead of box-shadow because it
        follows the image's alpha channel, not the bounding box. */
+    /* Hero book cover sized up 120% per design update — clamp scales
+       proportionally. Detail-page cover overrides width to 100% of its
+       column, so it isn't affected by this change. */
     .book-cover {
-      width: clamp(260px, 32vw, 420px);
+      width: clamp(312px, 38vw, 504px);
       aspect-ratio: 2 / 3;
       background: transparent;
       overflow: visible;
@@ -462,7 +465,7 @@
       transform: translateY(-8px);
     }
     .book-cover img {
-      width: 120%;
+      width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
@@ -824,14 +827,14 @@
        Kindle sample. Navigation adapts to the active theme.
        ========================================================= */
     .book-preview {
-      padding: 6rem 0 3rem;
-      margin-top: 4rem;
+      padding: 5rem 0 2.5rem;
+      margin-top: 3rem;
       border-top: 1px solid var(--border);
     }
     .preview-header {
       text-align: center;
       max-width: 640px;
-      margin: 0 auto 3.5rem;
+      margin: 0 auto 2.5rem;
     }
     .preview-header .eyebrow { justify-content: center; }
     .preview-header .eyebrow::after {
@@ -851,13 +854,13 @@
     }
 
     .preview-frame {
-      max-width: 680px;
+      max-width: 580px;
       margin: 0 auto;
       position: relative;
     }
     .preview-stage {
       position: relative;
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 5 / 6;
       perspective: 1500px;
       overflow: hidden;
       border-radius: 2px;
@@ -1044,6 +1047,57 @@
       color: var(--ink-muted);
       min-width: 50px;
       text-align: center;
+    }
+
+    /* COMPACT variant — used on home page so the whole widget
+       (header + page + controls) fits in one laptop viewport
+       without scrolling to reach prev/next buttons. */
+    .book-preview.compact {
+      padding: 4rem 0 2rem;
+      margin-top: 2rem;
+    }
+    .book-preview.compact .preview-header {
+      margin-bottom: 2rem;
+    }
+    .book-preview.compact .preview-header h2 {
+      font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    }
+    .book-preview.compact .preview-header p {
+      font-size: 0.95rem;
+    }
+    .book-preview.compact .preview-frame {
+      max-width: 420px;
+    }
+    .book-preview.compact .preview-page {
+      padding: 2.25rem 2rem;
+    }
+    .book-preview.compact .preview-page h3 {
+      font-size: clamp(1.35rem, 3vw, 1.85rem);
+      margin-bottom: 1rem;
+    }
+    .book-preview.compact .preview-page .preview-body {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 32ch;
+    }
+    .book-preview.compact .preview-page.title-page h3 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      margin-bottom: 1.5rem;
+    }
+    .book-preview.compact .preview-chapter {
+      margin-bottom: 1rem;
+      font-size: 0.65rem;
+    }
+    .book-preview.compact .preview-controls {
+      margin-top: 1.5rem;
+    }
+    .book-preview.compact .preview-arrow {
+      width: 42px;
+      height: 42px;
+    }
+    .book-preview.compact .preview-arrow svg {
+      width: 16px;
+      height: 16px;
     }
 
     /* =========================================================
@@ -1688,6 +1742,134 @@
           </div>
         </div>
       </div>
+
+      <!-- ===========================================
+           HOME PAGE BOOK PREVIEW (compact variant)
+           Mirrors the Book page slider but with a
+           narrower frame so the whole widget — header,
+           page, and controls — fits in one laptop
+           viewport without needing to scroll for the
+           prev/next buttons.
+           =========================================== -->
+      <div class="container">
+        <section class="book-preview compact stagger" aria-label="Book preview">
+          <div class="preview-header">
+            <span class="eyebrow">03 / Inside the Book</span>
+            <h2>Turn the page.</h2>
+            <p>A glimpse of the principles that shape the journey from average to elite.</p>
+          </div>
+
+          <div class="preview-frame">
+            <div class="preview-stage" tabindex="0" aria-roledescription="carousel" aria-label="Book page preview">
+
+              <!-- Page 1: Title -->
+              <article class="preview-page title-page active" aria-hidden="false">
+                <div class="preview-chapter">Masterclass</div>
+                <div>
+                  <h3>How to Become<br>a High Performer</h3>
+                  <div class="title-rule"></div>
+                  <div class="preview-author">Dr. R.K. Maddox</div>
+                </div>
+                <div class="page-num">i</div>
+              </article>
+
+              <!-- Page 2: Foreword -->
+              <article class="preview-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Foreword</div>
+                  <h3>A field manual for the relentlessly ambitious.</h3>
+                  <p class="preview-body">
+                    A lack of knowledge keeps people from achieving the very best in life. This book will change your attitude about <em>money</em>, <em>marriage</em>, and <em>momentum</em> — and move you from blessing to blessing.
+                  </p>
+                </div>
+                <div class="page-num">— ii —</div>
+              </article>
+
+              <!-- Page 3: Money -->
+              <article class="preview-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Part I</div>
+                  <h3>On Money.</h3>
+                  <p class="preview-body">
+                    Reframe your relationship with wealth. Build the discipline, structure, and abundance mindset that turn income into legacy.
+                  </p>
+                </div>
+                <div class="page-num">— 3 —</div>
+              </article>
+
+              <!-- Page 4: Marriage -->
+              <article class="preview-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Part II</div>
+                  <h3>On Marriage.</h3>
+                  <p class="preview-body">
+                    Strengthen the foundation behind every great career. Partnership is the compounding asset most ambitious people overlook.
+                  </p>
+                </div>
+                <div class="page-num">— 27 —</div>
+              </article>
+
+              <!-- Page 5: Momentum -->
+              <article class="preview-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Part III</div>
+                  <h3>On Momentum.</h3>
+                  <p class="preview-body">
+                    Compound small wins into unstoppable trajectory. Move from blessing to blessing with intentional, repeatable systems.
+                  </p>
+                </div>
+                <div class="page-num">— 54 —</div>
+              </article>
+
+              <!-- Page 6: CTA -->
+              <article class="preview-page cta-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Continue Reading</div>
+                  <h3>The full sample is on Kindle.</h3>
+                  <p class="preview-body">
+                    Read the complete opening chapters — free — or grab your copy in paperback.
+                  </p>
+                  <a href="https://read.amazon.com/sample/B0DDWGRGWR?clientId=share"
+                     class="btn btn-accent"
+                     target="_blank"
+                     rel="noopener noreferrer">
+                    Open Kindle Sample <span class="btn-arrow">→</span>
+                  </a>
+                </div>
+                <div class="page-num">— end of preview —</div>
+              </article>
+
+            </div>
+
+            <div class="preview-controls">
+              <button class="preview-arrow preview-prev" aria-label="Previous page" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"/>
+                  <polyline points="12 19 5 12 12 5"/>
+                </svg>
+              </button>
+
+              <div class="preview-dots" role="tablist">
+                <button class="preview-dot active" data-index="0" aria-label="Page 1"></button>
+                <button class="preview-dot" data-index="1" aria-label="Page 2"></button>
+                <button class="preview-dot" data-index="2" aria-label="Page 3"></button>
+                <button class="preview-dot" data-index="3" aria-label="Page 4"></button>
+                <button class="preview-dot" data-index="4" aria-label="Page 5"></button>
+                <button class="preview-dot" data-index="5" aria-label="Page 6"></button>
+              </div>
+
+              <div class="preview-counter">1 / 6</div>
+
+              <button class="preview-arrow preview-next" aria-label="Next page">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
     </section>
 
     <!-- ===================================================
@@ -1856,7 +2038,7 @@
           </div>
 
           <div class="preview-frame">
-            <div class="preview-stage" id="previewStage" tabindex="0" aria-roledescription="carousel" aria-label="Book page preview">
+            <div class="preview-stage" tabindex="0" aria-roledescription="carousel" aria-label="Book page preview">
 
               <!-- Page 1: Title -->
               <article class="preview-page title-page active" aria-hidden="false">
@@ -1939,14 +2121,14 @@
 
             <!-- Slider controls — prev / counter / next / dots -->
             <div class="preview-controls">
-              <button class="preview-arrow" id="previewPrev" aria-label="Previous page" disabled>
+              <button class="preview-arrow preview-prev" aria-label="Previous page" disabled>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12"/>
                   <polyline points="12 19 5 12 12 5"/>
                 </svg>
               </button>
 
-              <div class="preview-dots" id="previewDots" role="tablist">
+              <div class="preview-dots" role="tablist">
                 <button class="preview-dot active" data-index="0" aria-label="Page 1"></button>
                 <button class="preview-dot" data-index="1" aria-label="Page 2"></button>
                 <button class="preview-dot" data-index="2" aria-label="Page 3"></button>
@@ -1955,9 +2137,9 @@
                 <button class="preview-dot" data-index="5" aria-label="Page 6"></button>
               </div>
 
-              <div class="preview-counter" id="previewCounter">1 / 6</div>
+              <div class="preview-counter">1 / 6</div>
 
-              <button class="preview-arrow" id="previewNext" aria-label="Next page">
+              <button class="preview-arrow preview-next" aria-label="Next page">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"/>
                   <polyline points="12 5 19 12 12 19"/>
@@ -2187,7 +2369,7 @@
         <div class="footer-name">Dr. R.K. Maddox</div>
         <div class="footer-copy">© 2026 Dr. R.K. Maddox. All rights reserved.</div>
         <div class="footer-credit">
-          Developed by <a href="" target="_blank" rel="noopener noreferrer">Artchelo Design</a>
+          Developed by <a href="#" target="_blank" rel="noopener noreferrer">Artchelo Design</a>
         </div>
       </div>
     </div>
@@ -2334,81 +2516,83 @@
 
       /* -------------------------------------------------
          D. BOOK PREVIEW SLIDER
-         Hides/shows .preview-page slides with smooth fade
-         + translate. Supports prev/next buttons, dot nav,
-         keyboard arrows, and touch swipe on mobile.
+         Initializes a slider per .book-preview block, so
+         the same component can live on multiple pages
+         (home + book) without DOM-ID collisions. Supports
+         prev/next buttons, dot nav, keyboard, touch swipe.
          ------------------------------------------------- */
-      const previewPages = document.querySelectorAll('.preview-page');
-      const previewDots  = document.querySelectorAll('.preview-dot');
-      const previewPrev  = document.getElementById('previewPrev');
-      const previewNext  = document.getElementById('previewNext');
-      const previewStage = document.getElementById('previewStage');
-      const previewCounter = document.getElementById('previewCounter');
-      const totalPages = previewPages.length;
-      let currentPreviewIdx = 0;
+      function initBookPreviewSlider(root) {
+        const pages   = root.querySelectorAll('.preview-page');
+        const dots    = root.querySelectorAll('.preview-dot');
+        const prevBtn = root.querySelector('.preview-prev');
+        const nextBtn = root.querySelector('.preview-next');
+        const stage   = root.querySelector('.preview-stage');
+        const counter = root.querySelector('.preview-counter');
+        const total   = pages.length;
+        if (!total) return;
+        let idx = 0;
 
-      function renderPreview(idx) {
-        previewPages.forEach((p, i) => {
-          p.classList.remove('active', 'prev');
-          if (i === idx) {
-            p.classList.add('active');
-            p.setAttribute('aria-hidden', 'false');
-          } else {
-            if (i < idx) p.classList.add('prev');
-            p.setAttribute('aria-hidden', 'true');
-          }
+        function render(newIdx) {
+          pages.forEach((p, i) => {
+            p.classList.remove('active', 'prev');
+            if (i === newIdx) {
+              p.classList.add('active');
+              p.setAttribute('aria-hidden', 'false');
+            } else {
+              if (i < newIdx) p.classList.add('prev');
+              p.setAttribute('aria-hidden', 'true');
+            }
+          });
+          dots.forEach((d, i) => d.classList.toggle('active', i === newIdx));
+          if (prevBtn) prevBtn.disabled = newIdx === 0;
+          if (nextBtn) nextBtn.disabled = newIdx === total - 1;
+          if (counter) counter.textContent = (newIdx + 1) + ' / ' + total;
+          idx = newIdx;
+        }
+
+        if (prevBtn) prevBtn.addEventListener('click', () => {
+          if (idx > 0) render(idx - 1);
         });
-        previewDots.forEach((d, i) => {
-          d.classList.toggle('active', i === idx);
+        if (nextBtn) nextBtn.addEventListener('click', () => {
+          if (idx < total - 1) render(idx + 1);
         });
-        previewPrev.disabled = idx === 0;
-        previewNext.disabled = idx === totalPages - 1;
-        previewCounter.textContent = (idx + 1) + ' / ' + totalPages;
-        currentPreviewIdx = idx;
+        dots.forEach((d) => {
+          d.addEventListener('click', () => {
+            const target = parseInt(d.dataset.index, 10);
+            if (!isNaN(target)) render(target);
+          });
+        });
+
+        // Keyboard navigation when stage is focused
+        if (stage) {
+          stage.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && idx > 0) {
+              e.preventDefault();
+              render(idx - 1);
+            } else if (e.key === 'ArrowRight' && idx < total - 1) {
+              e.preventDefault();
+              render(idx + 1);
+            }
+          });
+
+          // Touch swipe — meaningful horizontal swipes only
+          let touchStartX = 0, touchStartY = 0;
+          stage.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+          }, { passive: true });
+          stage.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dy = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+            if (dx < 0 && idx < total - 1) render(idx + 1);
+            else if (dx > 0 && idx > 0) render(idx - 1);
+          }, { passive: true });
+        }
       }
 
-      previewPrev.addEventListener('click', () => {
-        if (currentPreviewIdx > 0) renderPreview(currentPreviewIdx - 1);
-      });
-      previewNext.addEventListener('click', () => {
-        if (currentPreviewIdx < totalPages - 1) renderPreview(currentPreviewIdx + 1);
-      });
-      previewDots.forEach((d) => {
-        d.addEventListener('click', () => {
-          const target = parseInt(d.dataset.index, 10);
-          if (!isNaN(target)) renderPreview(target);
-        });
-      });
-
-      // Keyboard navigation (when preview stage is focused)
-      previewStage.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft' && currentPreviewIdx > 0) {
-          e.preventDefault();
-          renderPreview(currentPreviewIdx - 1);
-        } else if (e.key === 'ArrowRight' && currentPreviewIdx < totalPages - 1) {
-          e.preventDefault();
-          renderPreview(currentPreviewIdx + 1);
-        }
-      });
-
-      // Touch swipe support
-      let touchStartX = 0;
-      let touchStartY = 0;
-      previewStage.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }, { passive: true });
-      previewStage.addEventListener('touchend', (e) => {
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
-        // Only horizontal swipes count, and they must be meaningful
-        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
-        if (dx < 0 && currentPreviewIdx < totalPages - 1) {
-          renderPreview(currentPreviewIdx + 1);
-        } else if (dx > 0 && currentPreviewIdx > 0) {
-          renderPreview(currentPreviewIdx - 1);
-        }
-      }, { passive: true });
+      // Initialize a slider for every .book-preview on the page
+      document.querySelectorAll('.book-preview').forEach(initBookPreviewSlider);
 
     })();
   </script>
