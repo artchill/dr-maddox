@@ -1489,7 +1489,8 @@
       height: 1px;
       background: var(--accent);
     }
-    .footer-credit a {
+    .footer-credit a,
+    .footer-credit .credit-name {
       color: var(--ink);
       font-family: 'Fraunces', serif;
       font-style: italic;
@@ -1497,6 +1498,8 @@
       letter-spacing: 0.02em;
       text-transform: none;
       font-variation-settings: "SOFT" 100, "opsz" 144;
+    }
+    .footer-credit a {
       transition: color .25s ease;
       border-bottom: 1px solid transparent;
     }
@@ -2030,7 +2033,7 @@
              swiping through book pages. Each page is a
              themed preview, not literal book content.
              =========================================== -->
-        <section class="book-preview stagger" aria-label="Book preview">
+        <section class="book-preview compact stagger" aria-label="Book preview">
           <div class="preview-header">
             <span class="eyebrow">Take a Look Inside</span>
             <h2>Turn the page.</h2>
@@ -2369,7 +2372,7 @@
         <div class="footer-name">Dr. R.K. Maddox</div>
         <div class="footer-copy">© 2026 Dr. R.K. Maddox. All rights reserved.</div>
         <div class="footer-credit">
-          Developed by <a href="#" target="_blank" rel="noopener noreferrer">Artchelo Design</a>
+          Developed by <span class="credit-name">Artchelo Design</span>
         </div>
       </div>
     </div>
