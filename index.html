@@ -443,33 +443,34 @@
       position: relative;
       perspective: 1200px;
     }
+    /* Container is transparent so the PNG (a 3D mockup with its own
+       depth + shadow) sits cleanly on the page background.
+       drop-shadow filter is used instead of box-shadow because it
+       follows the image's alpha channel, not the bounding box. */
     .book-cover {
       width: clamp(260px, 32vw, 420px);
       aspect-ratio: 2 / 3;
-      background: var(--surface-2);
-      border-radius: 2px;
-      box-shadow:
-        0 30px 60px -20px rgba(0,0,0,0.4),
-        0 18px 36px -18px rgba(0,0,0,0.3),
-        -4px 0 0 0 rgba(0,0,0,0.04);
-      overflow: hidden;
-      transform: rotateY(-8deg) rotateX(2deg);
-      transition: transform .8s cubic-bezier(.2,.7,.2,1);
+      background: transparent;
+      overflow: visible;
+      transition: transform .6s cubic-bezier(.2,.7,.2,1);
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .book-cover:hover {
-      transform: rotateY(-3deg) rotateX(1deg) translateY(-8px);
+      transform: translateY(-8px);
     }
     .book-cover img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
+      filter:
+        drop-shadow(0 30px 36px rgba(0, 0, 0, 0.45))
+        drop-shadow(0 10px 16px rgba(0, 0, 0, 0.25));
     }
-    /* Fallback styled cover if image fails */
+    /* Fallback box look — only shows if PNG fails to load */
     .book-cover-fallback {
       width: 100%;
       height: 100%;
@@ -480,6 +481,9 @@
       justify-content: space-between;
       padding: 2rem 1.5rem;
       font-family: 'Fraunces', serif;
+      box-shadow:
+        0 30px 60px -20px rgba(0,0,0,0.4),
+        0 18px 36px -18px rgba(0,0,0,0.3);
     }
     .book-cover-fallback .fb-eyebrow {
       font-family: 'Geist', sans-serif;
@@ -811,6 +815,235 @@
       background: var(--surface-2);
       color: var(--ink-muted);
       border-radius: 2px;
+    }
+
+    /* =========================================================
+       8b. BOOK PREVIEW SLIDER ("Take a Look Inside")
+       Stylized book-page reader. Pages keep their paper look in
+       both light and dark themes — like flipping through a real
+       Kindle sample. Navigation adapts to the active theme.
+       ========================================================= */
+    .book-preview {
+      padding: 6rem 0 3rem;
+      margin-top: 4rem;
+      border-top: 1px solid var(--border);
+    }
+    .preview-header {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 3.5rem;
+    }
+    .preview-header .eyebrow { justify-content: center; }
+    .preview-header .eyebrow::after {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .preview-header h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      margin: 1.5rem 0 1rem;
+    }
+    .preview-header p {
+      font-size: 1.05rem;
+      color: var(--ink-soft);
+    }
+
+    .preview-frame {
+      max-width: 680px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .preview-stage {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      perspective: 1500px;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+    /* Each preview page — always light "paper" regardless of theme */
+    .preview-page {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right,
+          #fbf6e9 0%,
+          #fdfaf2 8%,
+          #fdfaf2 92%,
+          #fbf6e9 100%
+        );
+      padding: clamp(2.5rem, 6vw, 4.5rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #1a1a1a;
+      box-shadow:
+        0 24px 48px -16px rgba(0, 0, 0, 0.35),
+        0 4px 12px rgba(0, 0, 0, 0.12);
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity .6s cubic-bezier(.2,.7,.2,1),
+                  transform .6s cubic-bezier(.2,.7,.2,1);
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .preview-page.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+    .preview-page.prev {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+    /* Subtle "fold" line down center — sells the open-book feel */
+    .preview-page::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 60px;
+      transform: translateX(-50%);
+      background: radial-gradient(
+        ellipse at center,
+        rgba(0,0,0,0.06) 0%,
+        transparent 70%
+      );
+      pointer-events: none;
+    }
+
+    .preview-chapter {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: #b8843e;
+      margin-bottom: 1.5rem;
+    }
+    .preview-page h3 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.75rem, 4.5vw, 2.6rem);
+      font-weight: 400;
+      color: #15140f;
+      margin: 0 0 1.5rem;
+      font-variation-settings: "SOFT" 30, "opsz" 144;
+      line-height: 1.15;
+    }
+    .preview-page .preview-body {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1rem, 1.5vw, 1.1rem);
+      line-height: 1.7;
+      color: #3a3a3a;
+      max-width: 38ch;
+    }
+    .preview-page .preview-body em {
+      color: #b8843e;
+      font-style: italic;
+    }
+    .preview-page .page-num {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: rgba(0, 0, 0, 0.35);
+      font-style: italic;
+    }
+    /* Title page (first slide) — centered layout */
+    .preview-page.title-page {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .preview-page.title-page .preview-chapter { color: #b8843e; }
+    .preview-page.title-page h3 {
+      font-size: clamp(2rem, 5.5vw, 3.4rem);
+      line-height: 1.05;
+      margin-bottom: 2rem;
+    }
+    .preview-page.title-page .preview-author {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      margin-top: 2rem;
+    }
+    .preview-page.title-page .title-rule {
+      width: 60px;
+      height: 1px;
+      background: #b8843e;
+      margin: 1.5rem auto;
+    }
+    /* CTA page (last slide) — closing call to action */
+    .preview-page.cta-page {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .preview-page.cta-page .preview-body { text-align: center; max-width: 32ch; }
+    .preview-page.cta-page .btn {
+      margin-top: 1.5rem;
+    }
+
+    /* Slider controls */
+    .preview-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .preview-arrow {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .25s ease;
+      padding: 0;
+    }
+    .preview-arrow:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: scale(1.05);
+    }
+    .preview-arrow:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    .preview-arrow svg { width: 18px; height: 18px; }
+
+    .preview-dots {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .preview-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-strong);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: all .3s ease;
+    }
+    .preview-dot.active {
+      background: var(--accent);
+      transform: scale(1.4);
+    }
+    .preview-counter {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--ink-muted);
+      min-width: 50px;
+      text-align: center;
     }
 
     /* =========================================================
@@ -1186,6 +1419,37 @@
       color: var(--ink-muted);
       letter-spacing: 0.05em;
     }
+    .footer-credit {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .footer-credit::before {
+      content: '';
+      width: 18px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .footer-credit a {
+      color: var(--ink);
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      font-variation-settings: "SOFT" 100, "opsz" 144;
+      transition: color .25s ease;
+      border-bottom: 1px solid transparent;
+    }
+    .footer-credit a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
 
     /* =========================================================
        13. RESPONSIVE
@@ -1241,6 +1505,12 @@
       .form-row { grid-template-columns: 1fr; gap: 0; }
       .contact-form { padding: 2rem 1.5rem; }
       .author-facts { grid-template-columns: 1fr; }
+
+      /* Book preview — tighter spacing on tablet/mobile */
+      .book-preview { padding: 4rem 0 2rem; margin-top: 2rem; }
+      .preview-stage { aspect-ratio: 3 / 4; }
+      .preview-controls { gap: 0.75rem; }
+      .preview-counter { min-width: 40px; font-size: 0.7rem; }
     }
 
     @media (max-width: 560px) {
@@ -1571,6 +1841,132 @@
             </div>
           </div>
         </div>
+
+        <!-- ===========================================
+             BOOK PREVIEW SLIDER — "Take a Look Inside"
+             A stylized in-site sample reader that mimics
+             swiping through book pages. Each page is a
+             themed preview, not literal book content.
+             =========================================== -->
+        <section class="book-preview stagger" aria-label="Book preview">
+          <div class="preview-header">
+            <span class="eyebrow">Take a Look Inside</span>
+            <h2>Turn the page.</h2>
+            <p>A visual preview of the principles that shape the journey from average to elite.</p>
+          </div>
+
+          <div class="preview-frame">
+            <div class="preview-stage" id="previewStage" tabindex="0" aria-roledescription="carousel" aria-label="Book page preview">
+
+              <!-- Page 1: Title -->
+              <article class="preview-page title-page active" aria-hidden="false">
+                <div class="preview-chapter">Masterclass</div>
+                <div>
+                  <h3>How to Become<br>a High Performer</h3>
+                  <div class="title-rule"></div>
+                  <div class="preview-author">Dr. R.K. Maddox</div>
+                </div>
+                <div class="page-num">i</div>
+              </article>
+
+              <!-- Page 2: Foreword (from synopsis) -->
+              <article class="preview-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Foreword</div>
+                  <h3>A field manual for the relentlessly ambitious.</h3>
+                  <p class="preview-body">
+                    A lack of knowledge keeps people from achieving the very best in life. This book will change your attitude about <em>money</em>, <em>marriage</em>, and <em>momentum</em> — and move you from blessing to blessing.
+                  </p>
+                </div>
+                <div class="page-num">— ii —</div>
+              </article>
+
+              <!-- Page 3: Pillar I — Money -->
+              <article class="preview-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Part I</div>
+                  <h3>On Money.</h3>
+                  <p class="preview-body">
+                    Reframe your relationship with wealth. Build the discipline, structure, and abundance mindset that turn income into legacy — and ordinary days into compounding seasons.
+                  </p>
+                </div>
+                <div class="page-num">— 3 —</div>
+              </article>
+
+              <!-- Page 4: Pillar II — Marriage -->
+              <article class="preview-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Part II</div>
+                  <h3>On Marriage.</h3>
+                  <p class="preview-body">
+                    Strengthen the foundation behind every great career. Partnership is the compounding asset most ambitious people overlook — and the one that determines how far the rest of it can go.
+                  </p>
+                </div>
+                <div class="page-num">— 27 —</div>
+              </article>
+
+              <!-- Page 5: Pillar III — Momentum -->
+              <article class="preview-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Part III</div>
+                  <h3>On Momentum.</h3>
+                  <p class="preview-body">
+                    Compound small wins into unstoppable trajectory. Move from blessing to blessing with intentional, repeatable systems — until excellence becomes your default, not your effort.
+                  </p>
+                </div>
+                <div class="page-num">— 54 —</div>
+              </article>
+
+              <!-- Page 6: Continue reading CTA -->
+              <article class="preview-page cta-page" aria-hidden="true">
+                <div>
+                  <div class="preview-chapter">Continue Reading</div>
+                  <h3>The full sample is on Kindle.</h3>
+                  <p class="preview-body">
+                    Read the complete opening chapters — free — or grab your copy in paperback and start the work today.
+                  </p>
+                  <a href="https://read.amazon.com/sample/B0DDWGRGWR?clientId=share"
+                     class="btn btn-accent"
+                     target="_blank"
+                     rel="noopener noreferrer">
+                    Open Kindle Sample <span class="btn-arrow">→</span>
+                  </a>
+                </div>
+                <div class="page-num">— end of preview —</div>
+              </article>
+
+            </div>
+
+            <!-- Slider controls — prev / counter / next / dots -->
+            <div class="preview-controls">
+              <button class="preview-arrow" id="previewPrev" aria-label="Previous page" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"/>
+                  <polyline points="12 19 5 12 12 5"/>
+                </svg>
+              </button>
+
+              <div class="preview-dots" id="previewDots" role="tablist">
+                <button class="preview-dot active" data-index="0" aria-label="Page 1"></button>
+                <button class="preview-dot" data-index="1" aria-label="Page 2"></button>
+                <button class="preview-dot" data-index="2" aria-label="Page 3"></button>
+                <button class="preview-dot" data-index="3" aria-label="Page 4"></button>
+                <button class="preview-dot" data-index="4" aria-label="Page 5"></button>
+                <button class="preview-dot" data-index="5" aria-label="Page 6"></button>
+              </div>
+
+              <div class="preview-counter" id="previewCounter">1 / 6</div>
+
+              <button class="preview-arrow" id="previewNext" aria-label="Next page">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
       </div>
     </section>
 
@@ -1789,7 +2185,10 @@
     <div class="container">
       <div class="footer-inner">
         <div class="footer-name">Dr. R.K. Maddox</div>
-        <div class="footer-copy">© 2025 Dr. R.K. Maddox. All rights reserved.</div>
+        <div class="footer-copy">© 2026 Dr. R.K. Maddox. All rights reserved.</div>
+        <div class="footer-credit">
+          Developed by <a href="#" target="_blank" rel="noopener noreferrer">Artchelo Design</a>
+        </div>
       </div>
     </div>
   </footer>
@@ -1932,6 +2331,84 @@
         formStatus.classList.add('visible');
         contactForm.reset();
       });
+
+      /* -------------------------------------------------
+         D. BOOK PREVIEW SLIDER
+         Hides/shows .preview-page slides with smooth fade
+         + translate. Supports prev/next buttons, dot nav,
+         keyboard arrows, and touch swipe on mobile.
+         ------------------------------------------------- */
+      const previewPages = document.querySelectorAll('.preview-page');
+      const previewDots  = document.querySelectorAll('.preview-dot');
+      const previewPrev  = document.getElementById('previewPrev');
+      const previewNext  = document.getElementById('previewNext');
+      const previewStage = document.getElementById('previewStage');
+      const previewCounter = document.getElementById('previewCounter');
+      const totalPages = previewPages.length;
+      let currentPreviewIdx = 0;
+
+      function renderPreview(idx) {
+        previewPages.forEach((p, i) => {
+          p.classList.remove('active', 'prev');
+          if (i === idx) {
+            p.classList.add('active');
+            p.setAttribute('aria-hidden', 'false');
+          } else {
+            if (i < idx) p.classList.add('prev');
+            p.setAttribute('aria-hidden', 'true');
+          }
+        });
+        previewDots.forEach((d, i) => {
+          d.classList.toggle('active', i === idx);
+        });
+        previewPrev.disabled = idx === 0;
+        previewNext.disabled = idx === totalPages - 1;
+        previewCounter.textContent = (idx + 1) + ' / ' + totalPages;
+        currentPreviewIdx = idx;
+      }
+
+      previewPrev.addEventListener('click', () => {
+        if (currentPreviewIdx > 0) renderPreview(currentPreviewIdx - 1);
+      });
+      previewNext.addEventListener('click', () => {
+        if (currentPreviewIdx < totalPages - 1) renderPreview(currentPreviewIdx + 1);
+      });
+      previewDots.forEach((d) => {
+        d.addEventListener('click', () => {
+          const target = parseInt(d.dataset.index, 10);
+          if (!isNaN(target)) renderPreview(target);
+        });
+      });
+
+      // Keyboard navigation (when preview stage is focused)
+      previewStage.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' && currentPreviewIdx > 0) {
+          e.preventDefault();
+          renderPreview(currentPreviewIdx - 1);
+        } else if (e.key === 'ArrowRight' && currentPreviewIdx < totalPages - 1) {
+          e.preventDefault();
+          renderPreview(currentPreviewIdx + 1);
+        }
+      });
+
+      // Touch swipe support
+      let touchStartX = 0;
+      let touchStartY = 0;
+      previewStage.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      previewStage.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        // Only horizontal swipes count, and they must be meaningful
+        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+        if (dx < 0 && currentPreviewIdx < totalPages - 1) {
+          renderPreview(currentPreviewIdx + 1);
+        } else if (dx > 0 && currentPreviewIdx > 0) {
+          renderPreview(currentPreviewIdx - 1);
+        }
+      }, { passive: true });
 
     })();
   </script>
