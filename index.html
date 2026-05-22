@@ -300,6 +300,28 @@
     }
     .menu-toggle svg { width: 18px; height: 18px; }
 
+    /* Backdrop appears behind the mobile menu when it's open;
+       click anywhere on it to dismiss. Hidden entirely on desktop. */
+    .nav-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 90;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .3s ease, visibility .3s;
+      cursor: pointer;
+    }
+    .nav-backdrop.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    @media (min-width: 901px) {
+      .nav-backdrop { display: none; }
+    }
+    /* Lock page scroll while the mobile menu is open */
+    body.menu-open { overflow: hidden; }
+
     /* =========================================================
        5. BUTTONS
        ========================================================= */
@@ -1514,19 +1536,31 @@
     @media (max-width: 900px) {
       .nav-links {
         position: fixed;
-        top: 88px;
+        top: 72px;
         left: 0;
         right: 0;
         flex-direction: column;
         background: var(--bg-elevated);
-        padding: 2rem;
-        gap: 1.5rem;
+        padding: 2rem 1.5rem;
+        gap: 1.25rem;
         border-bottom: 1px solid var(--border);
         transform: translateY(-110%);
-        transition: transform .35s cubic-bezier(.2,.7,.2,1);
+        opacity: 0;
+        visibility: hidden;
+        transition: transform .35s cubic-bezier(.2,.7,.2,1),
+                    opacity .25s ease,
+                    visibility .35s;
         align-items: flex-start;
+        z-index: 99;
+        max-height: calc(100vh - 72px);
+        overflow-y: auto;
+        box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.2);
       }
-      .nav-links.open { transform: translateY(0); }
+      .nav-links.open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
       .menu-toggle { display: inline-flex; }
 
       .hero-grid,
@@ -1539,8 +1573,18 @@
         gap: 3rem;
       }
 
-      .hero { padding: 3rem 0 5rem; }
-      .hero-visual { order: -1; }
+      /* Nav is shorter on tablet/mobile to save vertical space */
+      .nav-inner { height: 72px; }
+      main { padding-top: 72px; }
+
+      .hero { padding: 2.5rem 0 4rem; }
+      /* Text first, cover second — headline is the priority on small screens */
+      .hero-visual { order: 0; }
+      .hero-content { max-width: 100%; }
+      /* Smaller book cover on tablet/mobile so it doesn't dominate the viewport */
+      .hero-visual .book-cover {
+        width: clamp(220px, 50vw, 320px);
+      }
       .hero-meta { flex-wrap: wrap; gap: 1.5rem; }
 
       .book-detail-cover {
@@ -1568,6 +1612,36 @@
       .preview-stage { aspect-ratio: 3 / 4; }
       .preview-controls { gap: 0.75rem; }
       .preview-counter { min-width: 40px; font-size: 0.7rem; }
+    }
+
+    @media (max-width: 768px) {
+      /* Tighter rhythm at iPad-portrait sizes and below */
+      .container { padding: 0 1.5rem; }
+
+      /* Section padding compresses so content lands closer to the fold */
+      .pillars { padding: 4rem 0; }
+      .quote-band { padding: 4rem 0; }
+      .hero { padding: 2rem 0 3.5rem; }
+      .page-header { padding: 3rem 0 2.5rem; }
+      .author-layout,
+      .book-layout,
+      .contact-layout,
+      .media-content,
+      .reviews-grid { padding-bottom: 3rem; }
+
+      /* Headlines scale down so they don't crowd at tablet width */
+      .hero h1 { margin: 1rem 0 1.25rem; }
+      .hero-tagline { margin-bottom: 2rem; font-size: 1.05rem; }
+      .hero-ctas { margin-bottom: 2rem; }
+      .hero-meta { padding-top: 1.5rem; }
+
+      /* Buttons stack neatly on narrow screens */
+      .featured-video { padding: 1.5rem; }
+      .featured-video-info h2 { font-size: 1.4rem; }
+      .contact-form { padding: 2rem; }
+
+      /* Author portrait isn't as huge */
+      .author-portrait { max-width: 380px; margin: 0 auto; width: 100%; }
     }
 
     @media (max-width: 560px) {
@@ -1634,6 +1708,9 @@
       </div>
     </div>
   </nav>
+
+  <!-- Backdrop overlay for the mobile nav menu — clicking it closes the menu -->
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
 
   <main>
 
@@ -2407,8 +2484,11 @@
         history.replaceState(null, '', '#' + target);
         // Scroll to top of new page
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        // Close mobile menu if open
+        // Close mobile menu if open (full reset: menu, backdrop, body lock, aria)
         navLinksMenu.classList.remove('open');
+        document.body.classList.remove('menu-open');
+        const bd = document.getElementById('navBackdrop');
+        if (bd) bd.classList.remove('open');
         menuToggle.setAttribute('aria-expanded', 'false');
       }
 
@@ -2437,10 +2517,35 @@
 
       /* -------------------------------------------------
          B. MOBILE MENU TOGGLE
+         setMenuOpen synchronizes four things in one call:
+         the menu visibility, the backdrop, body scroll-lock,
+         and the aria-expanded state on the toggle button.
          ------------------------------------------------- */
+      const navBackdrop = document.getElementById('navBackdrop');
+
+      function setMenuOpen(open) {
+        navLinksMenu.classList.toggle('open', open);
+        navBackdrop.classList.toggle('open', open);
+        document.body.classList.toggle('menu-open', open);
+        menuToggle.setAttribute('aria-expanded', String(open));
+      }
+
       menuToggle.addEventListener('click', () => {
-        const isOpen = navLinksMenu.classList.toggle('open');
-        menuToggle.setAttribute('aria-expanded', String(isOpen));
+        setMenuOpen(!navLinksMenu.classList.contains('open'));
+      });
+      // Tap backdrop to dismiss
+      navBackdrop.addEventListener('click', () => setMenuOpen(false));
+      // ESC key dismisses
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navLinksMenu.classList.contains('open')) {
+          setMenuOpen(false);
+        }
+      });
+      // If the viewport grows back above the breakpoint, ensure menu state is reset
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 900 && navLinksMenu.classList.contains('open')) {
+          setMenuOpen(false);
+        }
       });
 
       /* -------------------------------------------------
