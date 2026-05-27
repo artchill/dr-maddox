@@ -1393,46 +1393,70 @@
       cursor: pointer;
     }
 
-    /* ==== Inline audio player card ====
-       Sits below the featured video. Mirrors the editorial
-       card pattern used elsewhere with a clean horizontal
-       layout: meta on the left, audio control on the right. */
-    .audio-player-card {
+    /* ==== Inline audio player card (lives at the top of
+       the platforms grid; spans all columns). Visually
+       part of the platform-card family but more prominent
+       — accent left rule, slightly elevated surface, and
+       no hover-tint since it's not a clickable redirect. */
+    .platform-inline-player {
+      grid-column: 1 / -1;
       display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 2.5rem;
+      grid-template-columns: minmax(220px, 0.9fr) 1.3fr;
+      gap: 2rem;
       align-items: center;
-      padding: 2rem 2.25rem;
-      margin-top: 1.5rem;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
       border-left: 3px solid var(--accent);
-      border-radius: 2px;
+      cursor: default;
+      margin-bottom: 0.5rem;
     }
-    .audio-player-meta h3 {
-      font-family: 'Fraunces', serif;
-      font-size: 1.5rem;
-      font-weight: 400;
-      margin: 1rem 0 0.5rem;
+    .platform-inline-player::before { display: none; }
+    .platform-inline-player:hover {
+      transform: none;
+      background: var(--surface);
+      border-color: var(--border-strong);
+      border-left-color: var(--accent);
+      box-shadow: none;
     }
-    .audio-player-meta p {
-      font-size: 0.95rem;
-      color: var(--ink-soft);
-      margin: 0;
-    }
-    .audio-player-control {
+    .inline-player-meta {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
     }
+    .inline-player-label {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .inline-player-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.2;
+      font-variation-settings: "SOFT" 30, "opsz" 144;
+    }
+    .inline-player-sub {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      margin-top: 0.35rem;
+    }
+    .inline-player-control { width: 100%; }
     .audio-element {
       width: 100%;
-      height: 48px;
+      height: 44px;
       border-radius: 2px;
       outline: none;
     }
-    /* Style the audio element shell where browsers allow */
     .audio-element::-webkit-media-controls-panel {
-      background-color: var(--surface);
+      background-color: var(--surface-2);
     }
     .audio-fallback {
       font-size: 0.9rem;
@@ -1812,11 +1836,11 @@
       }
       /* Platforms drop from 3 cols → 2 at tablet width */
       .platforms-grid { grid-template-columns: repeat(2, 1fr); }
-      /* Audio card stacks: meta on top, control below */
-      .audio-player-card {
+      /* Inline player stacks: meta on top, audio control below */
+      .platform-inline-player {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
-        padding: 1.5rem;
+        gap: 1.25rem;
+        padding: 1.25rem 1.5rem;
       }
       /* Featured action buttons stack on narrow viewports */
       .featured-actions { flex-direction: column; align-items: stretch; }
@@ -2584,37 +2608,12 @@
           </article>
 
           <!-- ============================================
-               INLINE AUDIO PLAYER
-               Plays the TWIA Show MP3 audio directly on
-               the site. Uses native HTML5 <audio> with
-               styled controls. Note: the source is served
-               over HTTPS for mixed-content compatibility
-               with modern HTTPS-deployed sites. If
-               bluefunkbroadcasting.com only supports HTTP,
-               the audio will fail to load and the fallback
-               text inside the element will show instead.
-               ============================================ -->
-          <div class="audio-player-card">
-            <div class="audio-player-meta">
-              <span class="eyebrow">Audio Version</span>
-              <h3>Listen on demand.</h3>
-              <p>Stream the full interview right here, or pick your favorite platform below.</p>
-            </div>
-            <div class="audio-player-control">
-              <audio controls preload="metadata" class="audio-element">
-                <source src="https://www.bluefunkbroadcasting.com/root/twia/41626rkm.mp3" type="audio/mpeg" />
-                <p class="audio-fallback">Your browser doesn't support inline audio. <a href="http://www.bluefunkbroadcasting.com/root/twia/41626rkm.mp3" target="_blank" rel="noopener noreferrer">Open the audio file directly →</a></p>
-              </audio>
-            </div>
-          </div>
-
-          <!-- ============================================
                LISTEN/STREAM ON EVERY PLATFORM
                The same Ric Bratton interview is syndicated
-               across many podcast/streaming platforms. Each
-               card links out in a new tab. Ordered roughly
-               by mainstream reach, with the direct MP3
-               (TWIA Show audio file) last.
+               across many podcast/streaming platforms. The
+               grid leads with a featured inline player so
+               visitors can listen here directly; the cards
+               below open external platforms in a new tab.
                ============================================ -->
           <div class="platforms-section">
             <div class="platforms-header">
@@ -2624,6 +2623,23 @@
             </div>
 
             <div class="platforms-grid">
+
+              <!-- FEATURED INLINE PLAYER — spans the full row.
+                   Single source of audio playback on the page, so
+                   "one audio at a time" is satisfied by design. -->
+              <div class="platform-card platform-inline-player">
+                <div class="inline-player-meta">
+                  <span class="inline-player-label">▶ Play Here</span>
+                  <span class="inline-player-title">The Full Ric Bratton Interview</span>
+                  <span class="inline-player-sub">Stream directly on this page — no redirect.</span>
+                </div>
+                <div class="inline-player-control">
+                  <audio controls preload="metadata" class="audio-element">
+                    <source src="https://www.bluefunkbroadcasting.com/root/twia/41626rkm.mp3" type="audio/mpeg" />
+                    <p class="audio-fallback">Your browser doesn't support inline audio. <a href="http://www.bluefunkbroadcasting.com/root/twia/41626rkm.mp3" target="_blank" rel="noopener noreferrer">Open the audio file directly →</a></p>
+                  </audio>
+                </div>
+              </div>
 
               <a class="platform-card" href="https://podcasts.apple.com/us/podcast/this-week-in-america-with-ric-bratton/id725684127" target="_blank" rel="noopener noreferrer">
                 <span class="platform-name">Apple Podcasts</span>
