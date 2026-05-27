@@ -1364,6 +1364,86 @@
       letter-spacing: 0.05em;
     }
 
+    /* ==== Inline YouTube embed (facade pattern) ====
+       When user clicks the .video-embed thumb, JS injects an
+       iframe into it. The .playing modifier disables hover
+       transforms so the iframe stays steady. */
+    .video-embed { cursor: pointer; }
+    .video-embed.playing { cursor: default; }
+    .video-embed.playing:hover img { transform: none; }
+    .video-embed.playing .play-button,
+    .video-embed.playing .video-thumb-overlay { display: none; }
+    .video-iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      z-index: 3;
+    }
+
+    /* Featured action row — Play (inline) + Watch on YouTube */
+    .featured-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .featured-actions .btn[data-youtube-id] {
+      cursor: pointer;
+    }
+
+    /* ==== Inline audio player card ====
+       Sits below the featured video. Mirrors the editorial
+       card pattern used elsewhere with a clean horizontal
+       layout: meta on the left, audio control on the right. */
+    .audio-player-card {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 2.5rem;
+      align-items: center;
+      padding: 2rem 2.25rem;
+      margin-top: 1.5rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 2px;
+    }
+    .audio-player-meta h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin: 1rem 0 0.5rem;
+    }
+    .audio-player-meta p {
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+    .audio-player-control {
+      display: flex;
+      align-items: center;
+    }
+    .audio-element {
+      width: 100%;
+      height: 48px;
+      border-radius: 2px;
+      outline: none;
+    }
+    /* Style the audio element shell where browsers allow */
+    .audio-element::-webkit-media-controls-panel {
+      background-color: var(--surface);
+    }
+    .audio-fallback {
+      font-size: 0.9rem;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+    .audio-fallback a {
+      color: var(--accent);
+      border-bottom: 1px solid var(--accent);
+    }
+
     /* =========================================================
        10b. PLATFORMS GRID (Media page)
        Multi-platform availability for the interview. Each card
@@ -1732,6 +1812,15 @@
       }
       /* Platforms drop from 3 cols → 2 at tablet width */
       .platforms-grid { grid-template-columns: repeat(2, 1fr); }
+      /* Audio card stacks: meta on top, control below */
+      .audio-player-card {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+      }
+      /* Featured action buttons stack on narrow viewports */
+      .featured-actions { flex-direction: column; align-items: stretch; }
+      .featured-actions .btn { width: 100%; }
       .review-card:nth-child(2),
       .review-card:nth-child(3) { margin-top: 0; }
 
@@ -2446,14 +2535,19 @@
 
         <div class="media-content stagger">
 
-          <!-- Featured: This Week in America with Ric Bratton -->
+          <!-- Featured: This Week in America with Ric Bratton.
+               YOUTUBE FACADE PATTERN — the thumbnail and play button
+               are clickable. On first click, the JS replaces the
+               thumbnail markup with an autoplay YouTube iframe so
+               the video plays inline (no redirect). Until the user
+               clicks, no YouTube scripts load — keeps the page fast. -->
           <article class="featured-video">
-            <a class="video-thumb"
-               href="https://www.youtube.com/watch?v=IgHW3EjdiTM"
-               target="_blank"
-               rel="noopener noreferrer"
-               aria-label="Watch the featured interview on YouTube">
-              <!-- YouTube auto-generated thumbnail; falls back to hqdefault if maxres unavailable -->
+            <div class="video-thumb video-embed"
+                 data-youtube-id="IgHW3EjdiTM"
+                 role="button"
+                 tabindex="0"
+                 aria-label="Play the featured interview inline">
+              <!-- YouTube-hosted thumbnail; falls back to hqdefault if maxres unavailable -->
               <img
                 src="https://img.youtube.com/vi/IgHW3EjdiTM/maxresdefault.jpg"
                 alt="This Week in America with Ric Bratton — Dr. R.K. Maddox interview"
@@ -2466,21 +2560,53 @@
                 <div class="vid-show">This Week in America</div>
                 <div class="vid-duration">Author & Book Interview</div>
               </div>
-            </a>
+            </div>
             <div class="featured-video-info">
               <div class="featured-label">★ Featured Interview</div>
               <h2>From Average to Elite: The Mindset Shift That Changes Everything</h2>
               <div class="video-host">with Ric Bratton — This Week in America</div>
               <p>Dr. R.K. Maddox joins veteran broadcaster Ric Bratton for an in-depth conversation about <em>Masterclass: How to Become a High Performer</em> — unpacking the principles, the practice, and the mindset that separates elite performers from everyone else.</p>
-              <a href="https://www.youtube.com/watch?v=IgHW3EjdiTM"
-                 class="btn btn-primary"
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 style="margin-top:1rem;">
-                Watch the Interview <span class="btn-arrow">→</span>
-              </a>
+
+              <div class="featured-actions">
+                <button class="btn btn-primary"
+                        data-youtube-id="IgHW3EjdiTM"
+                        data-play-target=".featured-video .video-embed">
+                  ▶ Play Interview
+                </button>
+                <a href="https://www.youtube.com/watch?v=IgHW3EjdiTM"
+                   class="btn btn-secondary"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  Watch on YouTube <span class="btn-arrow">↗</span>
+                </a>
+              </div>
             </div>
           </article>
+
+          <!-- ============================================
+               INLINE AUDIO PLAYER
+               Plays the TWIA Show MP3 audio directly on
+               the site. Uses native HTML5 <audio> with
+               styled controls. Note: the source is served
+               over HTTPS for mixed-content compatibility
+               with modern HTTPS-deployed sites. If
+               bluefunkbroadcasting.com only supports HTTP,
+               the audio will fail to load and the fallback
+               text inside the element will show instead.
+               ============================================ -->
+          <div class="audio-player-card">
+            <div class="audio-player-meta">
+              <span class="eyebrow">Audio Version</span>
+              <h3>Listen on demand.</h3>
+              <p>Stream the full interview right here, or pick your favorite platform below.</p>
+            </div>
+            <div class="audio-player-control">
+              <audio controls preload="metadata" class="audio-element">
+                <source src="https://www.bluefunkbroadcasting.com/root/twia/41626rkm.mp3" type="audio/mpeg" />
+                <p class="audio-fallback">Your browser doesn't support inline audio. <a href="http://www.bluefunkbroadcasting.com/root/twia/41626rkm.mp3" target="_blank" rel="noopener noreferrer">Open the audio file directly →</a></p>
+              </audio>
+            </div>
+          </div>
 
           <!-- ============================================
                LISTEN/STREAM ON EVERY PLATFORM
@@ -2897,6 +3023,57 @@
 
       // Initialize a slider for every .book-preview on the page
       document.querySelectorAll('.book-preview').forEach(initBookPreviewSlider);
+
+      /* -------------------------------------------------
+         E. YOUTUBE FACADE
+         Until a user clicks play, the video appears as a
+         lightweight thumbnail (no YouTube scripts loaded).
+         On click, we inject an autoplay iframe so the video
+         plays inline — no redirect to YouTube. Triggered
+         from both the thumbnail itself and any "Play"
+         button elsewhere that carries data-youtube-id.
+         ------------------------------------------------- */
+      function embedYouTubeInline(container, youtubeId) {
+        if (!container || !youtubeId) return;
+        if (container.classList.contains('playing')) return; // already playing
+
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube.com/embed/' + youtubeId +
+                     '?autoplay=1&rel=0&modestbranding=1';
+        iframe.title = 'YouTube interview player';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen';
+        iframe.allowFullscreen = true;
+        iframe.className = 'video-iframe';
+        // Replace placeholder contents
+        container.appendChild(iframe);
+        container.classList.add('playing');
+      }
+
+      // Direct clicks on the facade thumbnail
+      document.querySelectorAll('.video-embed[data-youtube-id]').forEach((el) => {
+        const id = el.dataset.youtubeId;
+        el.addEventListener('click', () => embedYouTubeInline(el, id));
+        // Keyboard activation for accessibility (Enter / Space)
+        el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            embedYouTubeInline(el, id);
+          }
+        });
+      });
+
+      // "Play" buttons that target a specific video thumb
+      document.querySelectorAll('[data-play-target]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.youtubeId;
+          const target = document.querySelector(btn.dataset.playTarget);
+          if (target && id) {
+            embedYouTubeInline(target, id);
+            // Smooth-scroll the video into view so it's visible while playing
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+      });
 
     })();
   </script>
